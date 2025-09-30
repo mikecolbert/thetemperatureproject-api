@@ -277,6 +277,7 @@ def create_temperature():
 
       "temperature_f": 72.5,
       "humidity": 44.3,
+      "pressure": 1.7,
       "read_time": "2025-09-24 13:05:00"  # optional; UTC recommended
     }
     """
@@ -284,7 +285,7 @@ def create_temperature():
     if err:
         return err
 
-    required = ["sensor_id", "temperature_f", "humidity"]
+    required = ["sensor_id", "temperature_f", "humidity", "pressure"]
     missing = [k for k in required if k not in data]
     if missing:
         return bad_request(f"Missing fields: {', '.join(missing)}")
@@ -305,14 +306,15 @@ def create_temperature():
     try:
         db = get_db()
         q = """
-            INSERT INTO temperature_log (read_time, sensor_id, temperature_f, humidity)
-            VALUES (%s, %s, %s, %s)
+            INSERT INTO temperature_log (read_time, sensor_id, temperature_f, humidity, pressure)
+            VALUES (%s, %s, %s, %s, %s)
         """
         params = (
             dt,
             int(data["sensor_id"]),
             float(data["temperature_f"]),
             float(data["humidity"]),
+            float(data["pressure"]),
         )
         _, last_id = db.execute(q, params)
         created = get_db().fetch_one(
@@ -392,6 +394,13 @@ def update_log(log_id: int):
             params.append(float(data["humidity"]))
         except ValueError:
             return bad_request("humidity must be a number")
+
+    if "pressure" in data:
+        sets.append("pressure=%s")
+        try:
+            params.append(float(data["pressure"]))
+        except ValueError:
+            return bad_request("pressure must be a number")
 
     if not sets:
         return bad_request("No updatable fields provided")
