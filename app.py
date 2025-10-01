@@ -155,6 +155,14 @@ def require_json():
         return None, bad_request("Content-Type must be application/json", 415)
     return request.get_json(silent=True) or {}, None
 
+# -----------------------------------------------------------------------------
+# Home
+# -----------------------------------------------------------------------------
+@app.get("/")
+def home():
+    message="Temperature Logger API"
+    return jsonify({"message": message})
+
 
 # -----------------------------------------------------------------------------
 # Health
