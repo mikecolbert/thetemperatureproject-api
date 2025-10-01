@@ -277,7 +277,7 @@ def create_temperature():
 
       "temperature_f": 72.5,
       "humidity": 44.3,
-      "pressure": 1.7,
+      "pressure": 995.2,
       "read_time": "2025-09-24 13:05:00"  # optional; UTC recommended
     }
     """
